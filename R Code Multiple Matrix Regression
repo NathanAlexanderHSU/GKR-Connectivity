@@ -1,0 +1,75 @@
+Gen<-(read.csv("H:\\THESISDATA\\Genetics\\PairwiseGenDist.csv"))
+
+##Make a full matrix from the genetic matrix
+
+Gen[upper.tri(Gen)] = t(Gen)[upper.tri(Gen)]
+dim(Gen)
+Gen<-Gen[,-1] ##Remove Labels
+head(Gen)
+Gen<-as.dist(Gen)
+install.packages("gdata")
+require(gdata)
+
+##Create Vectors from dist matrices
+
+##Genetic Codominant distance)
+
+gen<-as.dist(lowerTriangle(Gen, diag=FALSE))
+
+length(gen)
+
+##Cost Surfaces
+setwd("H:\\THESISDATA\\IndIBRDist\\")
+Precip<-as.dist(read.csv("Model.1costmap.asc.csv"))
+Slope<-as.dist(read.csv("Model.2costmap.asc.csv"))
+Veg<-as.dist(read.csv("Model.3costmap.asc.csv"))
+Road<-as.dist(read.csv("Model.4costmap.asc.csv"))
+Geo<-(read.csv("H:\\THESISDATA\\EuclideanDistance.csv"))
+head(Geo)
+Geo<-Geo[,-1]
+Geo<-as.dist(Geo)
+#######Untie the distance matrices-may not need to do this
+precip<-as.vector(lowerTriangle(Precip, diag=FALSE))
+slope<-as.vector(lowerTriangle(Slope, diag=FALSE))
+veg<-as.vector(lowerTriangle(Veg, diag=FALSE))
+road<-as.vector(lowerTriangle(Road, diag=FALSE))
+euclidean<-as.vector(lowerTriangle(Geo,diag=FALSE))
+euclidean<-euclidean/1000 ##transform into km
+head(euclidean)
+head(gen)
+precip
+
+require(ecodist)
+###MRM=Multiple Matrix Regression
+
+full<-MRM(Gen~Precip+Slope+Veg+Road+Geo,nperm=100000,mrank=FALSE)
+full
+
+PrecipModel<-MRM(Gen~Precip+Geo,nperm=100000,mrank=FALSE)
+(PrecipModel)
+
+SlopeModel<-MRM(Gen~Slope+Geo,nperm=100000,mrank=FALSE)
+(SlopeModel)
+
+VegModel<-MRM(Gen~Veg+Geo,nperm=100000,mrank=FALSE)
+(VegModel)
+
+RoadModel<-MRM(Gen~Slope+Geo,nperm=100000,mrank=FALSE)
+(RoadModel)
+
+Euc<-MRM(Gen~Geo,nperm=100000,mrank=FALSE)
+Euc
+
+plot(Gen)
+??gINLAnd
+
+
+###Mantel Correlogram
+
+Trial<-mgram(Gen,Geo,nperm = 100000,
+      mrank = FALSE, nboot = 500, pboot = 0.9, cboot = 0.95,
+      alternative = "two.sided", trace =  FALSE)
+
+plot(Trial,pval = 0.05, xlab = "Distance", ylab = "Mantel r")
+abline(h=0, col="red")
+Trial
