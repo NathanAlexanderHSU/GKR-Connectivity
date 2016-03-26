@@ -1,0 +1,69 @@
+IBRDist<-list.files("H://CSMatrices")
+IBRDist
+
+install.packages("gdata")
+require(gdata)
+ibr.dist<-NULL
+for(i in 1:length(IBRDist)){
+
+	a<-read.csv(paste("H://CSMatrices//",IBRDist[i],collapse='',sep=""),header=T)
+	a[,1]<-NULL
+	ibr<-as.vector(lowerTriangle(a, diag=FALSE))
+	ibr.dist <- cbind(ibr.dist, ibr)
+}
+head(ibr.dist)
+colnames(ibr.dist)<-cbind(IBRDist)
+
+head(ibr.dist)
+
+
+##CSV of All the Distances
+
+
+##get To/From Nodes from LCP maps
+
+
+Nodes<-read.table("H://LCP//LCPmodel_1costmap_asc.asc.txt")
+colnames(Nodes)<-c("From","To","Cost")
+IBREuc<-cbind(Nodes[,1:2],Euclidean,ibr.dist)
+
+write.csv(IBREuc,"C://Users//nba52//Desktop//IBRDistances.csv")
+
+##Boxplots based on nodes
+
+IBREuc<-read.csv("H:\\CostExcelFiles\\IBRDistances.csv")
+head(IBREuc)
+dim(IBREuc)
+Box<-data.frame(IBREuc[,4:27])
+head(Box)
+colnames(Box[,1])<-c("To")
+Node1<-Box[1:103,]
+colnames(Node1)<-c("Euclidean",IBREuc[,5:27])
+scale(Node1)
+head(Node1)
+dim(Box)
+dat.m<-melt(Node1,id.vars='Euclidean',measure.vars=c(names(Box[,2:24])))
+dat.m[,1]<-as.factor(dat.m[,1])
+head(dat.m)
+colnames(dat.m)<-c("Euclidean","Map","IBRCost")
+dev.new()
+qplot(Euclidean,IBRCost,data=dat.m,geom=c("jitter","boxplot"),alpha=I(1))+ theme(axis.text.x = element_blank())
+
+
+LCPs<-read.csv("H:\\CostExcelFiles\\LCPscaled.csv")
+head(LCPs)
+dim(LCPs)
+Box<-data.frame(LCPs[,3:29])
+head(Box)
+colnames(Box[,1])<-c("To")
+Node1<-Box[1:103,]
+colnames(Node1)<-c("Euclidean",1:26)
+scale(Node1)
+head(Node1)
+dim(Node1)
+dat.m<-melt(Node1,id.vars='Euclidean',measure.vars=c(2:27))
+dat.m[,1]<-as.factor(dat.m[,1])
+head(dat.m)
+colnames(dat.m)<-c("Euclidean","Map","LCP_Euclidean")
+dev.new()
+qplot(Euclidean,LCP_Euclidean,data=dat.m,geom=c("jitter","boxplot"),alpha=I(1))+ theme(axis.text.x = element_blank())
