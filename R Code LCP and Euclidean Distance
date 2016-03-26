@@ -1,0 +1,179 @@
+LCP#
+
+
+# Load libraries
+
+install.packages("gdistance")
+install.packages("rgdal")
+
+require(gdistance)
+require(raster)
+require(rgdal)
+require(sp)
+
+
+
+
+cost.surface <- raster("F:\\GKRThesisCoding\\ExportedModels\\model234costmap_asc.asc")
+
+
+
+# ------------------------------
+# Calculate cost landscape
+# ------------------------------
+
+# The gdistance package allows you to calculate cost distance rasters and
+# least cost paths between points. It takes a few steps, more details can 
+# be found in the gdistance manual in the Connectivity folder. There are a 
+# few steps to calculating the cost distance surface and LCP
+
+# First, we create a "transition" raster that calculates cost between every 
+# pixel in the raster; you can calculate costs for just the 4 adjacent cells
+# (no diagonals), the 8 adjacent cells (all diagonals), or the adjacent 
+# 16 cells ("knight movements" + 8 adjacent). You can supply it with any 
+# function, but typically the cost is either a sum of cells or multiplication
+
+tr <- transition(cost.surface, transitionFunction=sum, directions=8)
+
+
+# Because we used all 8 directions, we need to correct for diagonal movement
+# It should cost more to move diagonally because that's a greater distance 
+# than moving to a directly adjacent cell; the following function corrects
+# for that.
+
+tr.corr <- geoCorrection(tr, type="c")
+
+
+# We can now calculate a least cost distance path b/w any pair of points.
+# I'll show you how to do them individually, and then create a for loop
+# to calculate distances between all points in the study area
+
+# Convert gkr.pts from a SpatialPointsDataFrame into a data frame
+
+
+# The patch IDs need to be integers when exported for Conefor analysis
+
+
+# Create empty data.frame to store data
+patch.dist <- NULL
+
+# Note the for loop is written in such a way that the "from" patches will be
+# calculated for all except the final patch, and the "to" patches will be 
+# calculated for all of the patches that haven't been "from" patches yet, to
+# get around the combinatorial issue discussed above.
+
+
+gkr.pts <- readOGR("H:\\THESISDATA\\GKR_LatLon\\Nad83UTM10",layer="GKR_GenSample")
+plot(gkr.pts)
+head(gkr.pts)
+gkr<-as.data.frame(gkr.pts)
+head(gkr)
+patch.locs <- data.frame(gkr$ID,gkr$coords.x1,gkr$coords.x2)
+names(patch.locs)<-c("ID","x","y")
+head(patch.locs)
+maps <- list.files(path="H:\\THESISDATA\\OutputCostMaps\\")    #prompt user for dir containing raster files
+maps
+for(k in 1:length(maps)){
+
+	cost.surface <- raster(paste("H:\\THESISDATA\\OutputCostMaps\\",maps[k],collapse='',sep=""))
+	tr <- transition(1/cost.surface, transitionFunction=sum, directions=8)
+	tr.corr <- geoCorrection(tr, type="c")
+	patch.dist <- NULL
+
+
+for(i in 1:(nrow(patch.locs)-1)){
+	from.patch <- patch.locs[i,]
+
+
+	# For each new patch
+	for(j in (i+1):nrow(patch.locs)){
+		to.patch <- patch.locs[j,]
+		from.loc <- c(from.patch$x, from.patch$y)
+		to.loc <- c(to.p atch$x, to.patch$y)
+		cost <- costDistance(tr.corr, from.loc, to.loc)
+		patch.dist <- rbind(patch.dist, data.frame(from.patch$ID, to.patch$ID, cost))		
+		print(paste(from.patch$ID, to.patch$ID, Sys.time()))
+	}
+}
+
+write.table(patch.dist, paste("H:\\THESISDATA\\LCPDist\\","LCP",maps[k],".txt",collapse='',sep=""), row.names=FALSE, col.names=FALSE)
+
+}
+######MAPPING LCP
+
+install.packages("gdistance")
+install.packages("rgdal")
+install.packages("raster")
+require(gdistance)
+require(raster)
+require(rgdal)
+require(sp)
+gkr.pts <- readOGR("F:\\GKRThesisCoding",layer="ocpt")
+patch.locs <- as.data.frame(gkr.pts)
+names(patch.locs)<-c("pointID","gridID","x","y")
+head(patch.locs)
+gkr.pts$ident <- as.integer(patch.locs$pointID)
+maps <- list.files(path="H:\\R_CS\\CM")    #prompt user for dir containing raster files
+e <- extent(685000,730000,4030000,4065000)
+plot(e)
+plot(raster(paste("H:\\R_CS\\CM\\model_2costmap_asc.asc")),legend=FALSE,xlim=c(684900,730000),ylim=c(4030000,4065000),add=TRUE)
+head(gkr.pts)
+plot(gkr.pts[1,],add=TRUE,pch=17)
+plot(gkr.pts[6,],add=TRUE,pch=17)
+plot(gkr.pts[104,],add=TRUE,pch=17)
+
+
+for(k in 1:length(maps)){
+  
+  cost.surface <- raster(paste("H:\\R_CS\\CM\\",maps[k],collapse='',sep=""))
+  tr <- transition(1/cost.surface, transitionFunction=sum, directions=8)
+  tr.corr <- geoCorrection(tr, type="c")
+  
+  
+  
+  from.patch <- patch.locs[1,]
+  
+  to.patch <- patch.locs[6,]
+  from.loc <- c(from.patch$x, from.patch$y)
+  to.loc <- c(to.patch$x, to.patch$y)
+  cost <- shortestPath(tr.corr, from.loc, to.loc,output="SpatialLines")
+  lines(cost,col="red")
+}
+
+
+###################
+
+setwd("H:\\LCP")
+LCP<-list.files("H:\\LCP")
+LCP
+for (i in 1:length(LCP)){
+	a<-read.table(LCP[i])
+	assign(paste("Path",i,collapse='',sep=""),data.frame(a[,3]))
+}
+Path1<-read.table(paste("H:\\LCPTRUE\\",LCP[1],collapse='',sep=""))
+Path1
+Paths<-NULL
+for (i in 1:length(LCP)){
+Paths<-data.frame(cbind(Path1,Path2,Path3,Path4,Path5,Path6,Path7,Path8,Path9,Path10,Path11,Path12,Path13,Path14,Path15,Path16,Path17,Path18,Path19,Path20,Path21,Path22,Path23,Path24,Path25,Path26))
+}
+names(Paths)<-c("From","To",LCP[1:26])
+
+write.csv(Paths,"C:\\Users\\nba52\\Desktop\\LCPDistances.csv")
+
+###Euclidean Distance
+gkr.pts <- readOGR("F:\\GKRThesisCoding",layer="ocpt",p4s="+proj=utm +zone=10 +datum=NAD83 +units=m") 
+summary(gkr.pts)
+patch.locs <- as.data.frame(gkr.pts)
+head(patch.locs)
+names(patch.locs)<-c("pointID","gridID","x","y")
+head(patch.locs)
+EucLCP<-patch.locs[order(patch.locs$gridID),]
+head(EucLCP)
+plot(gkr)
+try<-apply(data.frame(patch.locs[,3:4]), 1, function(eachPoint) spDistsN1(as.matrix(data.frame(patch.locs[,3:4])), eachPoint))
+head(try)
+install.packages("gdata")
+require(gdata)
+Euclidean<-lowerTriangle(try, diag=FALSE)
+head(Euclidean)
+write.csv(try,"C:\\Users\\nba52\\Desktop\\EuclideanVectorTrial.csv")
