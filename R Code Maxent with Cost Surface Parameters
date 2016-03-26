@@ -26,6 +26,7 @@ setwd("H:\\GKRShapefiles\\")
 
 #BuffBound3 is the northern CPNA study site buffered by 2000m and projected into NAD_1983_10_UTM
 
+
 gkr<- readOGR(dsn=".",layer="GKRAllpts")
 #abs<-readOGR(dsn='.',layer="rand")
 
