@@ -1,0 +1,79 @@
+##Creating individual matrices from population distance matrices
+
+##read in Genetic Distance Maps
+Gen<-(read.csv("H:\\THESISDATA\\Genetics\\PairwiseGenDist.csv"))
+
+##Make a full matrix from the genetic matrix
+
+Gen[upper.tri(Gen)] = t(Gen)[upper.tri(Gen)]
+dim(Gen)
+
+##read in a file with the krat individuals and the krat sites
+
+KratSite<-read.csv("H:\\THESISDATA\\KRAT_SITE_FILES\\Krat_Lat.csv")
+
+##read in a file that has sites associated with circuitscape numeric values (order of nodes)
+
+SiteNum<-read.csv("H:\\THESISDATA\\KRAT_SITE_FILES\\Lat_CS.csv")
+
+head(SiteNum)
+length(SiteNum$Cscode)
+head(KratSite)
+
+
+##merge the two datasets to allow each individual to have a population based Circuitscape code
+
+KratNum<-merge(KratSite,SiteNum,by="Lat")
+head(KratSite)
+head(KratNum)
+
+##rename the column names
+
+names(KratNum)<-c("Lat","ID","CScode")
+
+##Merging made the individuals get out of order. To use individuals, we need to re-order
+##based on the genetic distance order
+
+
+
+#rename row names to do pairwise
+
+OrderedData <- KratNum[order(KratNum$ID, KratSite$Lat),1:3]
+head(OrderedData)
+
+rownames(Gen)<-OrderedData$ID[1:121]
+
+x<-(OrderedData$CScode)
+length(x)
+##read in cost maps
+
+IBRmaps<-list.files("H:\\THESISDATA\\IBRDistMatrices\\")
+IBRmaps
+##read in file with the Circuitscape ID assignment
+
+SiteNum<-read.table("H:\\THESISDATA\\GKR_LatLon\\GKR_Circuitscape_Site.txt")
+
+for(k in 1:length(IBRmaps)){
+  model<-read.csv(paste(c("H:\\THESISDATA\\IBRDistMatrices\\",IBRmaps[k]),sep="",collapse=""),header=T)
+  model<-model[,-1] ##Get rid of list of names
+  row.names(model)<-SiteNum[,1]
+  colnames(model)<-SiteNum[,1]
+  
+  Individual<-matrix(NA,ncol=121,nrow=121) ##Create a null matrix of length of individuals
+  for(i in 1:121){
+    
+    for(j in 1:121){
+      
+      Individual[i,j]<-model[paste(c(x[i]),collapse="",sep=","),paste(c(x[j]),collapse="",sep=",")]
+    }
+  }
+  Data<-data.frame(Individual)
+  write.csv(Individual,paste(c("H:\\THESISDATA\\IndIBRDist\\",IBRmaps[k]),sep="",collapse=""))
+  
+}
+
+
+
+
+
+
