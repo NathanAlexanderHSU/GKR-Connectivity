@@ -1,0 +1,27 @@
+## Mantel Trial data from GenAlEx-both Distance and Gen Distance
+install.packages("ecodist")
+require(ecodist)
+
+IndCostMat<-list.files("H:\\THESISDATA\\IndIBRDist\\")
+setwd("H:\\THESISDATA\\IndIBRDist\\")
+cost<-read.csv(IndCostMat[1])
+cost
+
+GeoDist<-read.csv("H:\\THESISDATA\\EuclideanDistance.csv")
+GeoDist<-(GeoDist[-1,-1:-2])
+GeoDist<-as.dist(GeoDist)
+MantelMatrix<-matrix(NA,ncol=7)
+for(i in 1:length(IndCostMat)){
+  x<-read.csv(IndCostMat[i])
+  x<-x[-2,-1] ##K-002 not in the Gen Analysis? remove row 1 and column 1 just for trial
+GenDist<-as.dist(Gen)
+CostDist<-as.dist(x)
+Man<-mantel(GenDist~CostDist+GeoDist, nperm=100000,mrank=FALSE,nboot=1000,pboot=.9,cboot=.95) ##mrank=FALSE; Pearson better than Spear for linear
+Man1<-cbind(IndCostMat[i],Man[1],Man[2],Man[3],Man[4],Man[5],Man[6])
+MantelMatrix<- rbind(Man1,MantelMatrix)
+}
+Man
+
+colnames(MantelMatrix)<-c("Model","mantelr","pval1","pval2","pval3","llim.2.5%","ulim.97.5%")
+  
+write.csv(MantelMatrix,"H:\\THESISDATA\\Mantel\\PartialMantelPearson.csv")
