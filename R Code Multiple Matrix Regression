@@ -1,75 +1,43 @@
-Gen<-(read.csv("H:\\THESISDATA\\Genetics\\PairwiseGenDist.csv"))
-
+# MMRR performs Multiple Matrix Regression with Randomization analysis
+# Y is a dependent distance matrix
+# X is a list of independent distance matrices (with optional names)
+install.packages("PopGenReport")
+require(PopGenReport)
+Gen<-(read.csv("H:\\THESISDATA\\Genetics\\PairwiseGenDist14Loci.csv"))
+Gen<-Gen[,-122]
 ##Make a full matrix from the genetic matrix
-
+head(Gen)
 Gen[upper.tri(Gen)] = t(Gen)[upper.tri(Gen)]
 dim(Gen)
-Gen<-Gen[,-1] ##Remove Labels
-head(Gen)
-Gen<-as.dist(Gen)
-install.packages("gdata")
-require(gdata)
+Gen<-as.matrix((Gen))
 
-##Create Vectors from dist matrices
+setwd(choose.dir())
+Pred<-list.files()
+Pred
 
-##Genetic Codominant distance)
+Precip<-read.csv(Pred[1])
+Slope<-read.csv(Pred[2])
+Veg<-read.csv(Pred[3])
+Road<-read.csv(Pred[4])
+Euc<-read.csv("H:\\THESISDATA\\EuclideanDistance.csv")
+Euc<-as.matrix(Euc[,-1])
+dim(Euc)
 
-gen<-as.dist(lowerTriangle(Gen, diag=FALSE))
-
-length(gen)
-
-##Cost Surfaces
-setwd("H:\\THESISDATA\\IndIBRDist\\")
-Precip<-as.dist(read.csv("Model.1costmap.asc.csv"))
-Slope<-as.dist(read.csv("Model.2costmap.asc.csv"))
-Veg<-as.dist(read.csv("Model.3costmap.asc.csv"))
-Road<-as.dist(read.csv("Model.4costmap.asc.csv"))
-Geo<-(read.csv("H:\\THESISDATA\\EuclideanDistance.csv"))
-head(Geo)
-Geo<-Geo[,-1]
-Geo<-as.dist(Geo)
-#######Untie the distance matrices-may not need to do this
-precip<-as.vector(lowerTriangle(Precip, diag=FALSE))
-slope<-as.vector(lowerTriangle(Slope, diag=FALSE))
-veg<-as.vector(lowerTriangle(Veg, diag=FALSE))
-road<-as.vector(lowerTriangle(Road, diag=FALSE))
-euclidean<-as.vector(lowerTriangle(Geo,diag=FALSE))
-euclidean<-euclidean/1000 ##transform into km
-head(euclidean)
-head(gen)
-precip
-
-require(ecodist)
-###MRM=Multiple Matrix Regression
-
-full<-MRM(Gen~Precip+Slope+Veg+Road+Geo,nperm=100000,mrank=FALSE)
-full
-
-PrecipModel<-MRM(Gen~Precip+Geo,nperm=100000,mrank=FALSE)
-(PrecipModel)
-
-SlopeModel<-MRM(Gen~Slope+Geo,nperm=100000,mrank=FALSE)
-(SlopeModel)
-
-VegModel<-MRM(Gen~Veg+Geo,nperm=100000,mrank=FALSE)
-(VegModel)
-
-RoadModel<-MRM(Gen~Slope+Geo,nperm=100000,mrank=FALSE)
-(RoadModel)
-
-Euc<-MRM(Gen~Geo,nperm=100000,mrank=FALSE)
-Euc
-
-plot(Gen)
-??gINLAnd
+Precip<-as.matrix(Precip[,-1])
+Slope<-as.matrix(Slope[,-1])
+Veg<-as.matrix(Veg[,-1])
+Road<-as.matrix(Road[,-1])
 
 
-###Mantel Correlogram
+EnvCost<-list(Precip,Slope,Veg,Road)
+names(EnvCost[[1]])<-names("Precip")
+names(EnvCost[[2]])<-names("Slope")
+names(EnvCost[[3]])<-names("Veg")
+names(EnvCost[[4]])<-names("Road")
 
-Trial<-mgram(Gen,Geo,nperm = 100000,
-      mrank = FALSE, nboot = 500, pboot = 0.9, cboot = 0.95,
-      alternative = "two.sided", trace =  FALSE)
+class(EnvCost)
+class(EnvCost[[1]]) 
 
-plot(Trial,pval = 0.05, xlab = "Distance", ylab = "Mantel r")
-abline(h=0, col="red")
-Trial
+
+lgrMMRR(Gen,EnvCost,eucl.mat=Euc,nperm=9999)
+
