@@ -20,7 +20,7 @@ library(dismo)
 
 
 
-setwd("H:\\THESISDATA\\GKR_LatLon\\CircuitscapeRasters\\CSBoundedCorrectly\\")
+setwd(".\\GKR_LatLon\\CircuitscapeRasters\\CSBoundedCorrectly\\")
 
 
 
