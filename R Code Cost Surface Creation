@@ -101,16 +101,16 @@ print(output.dir)
 output.dir <- paste("H:\\THESISDATA\\OutputCostMaps\\TrumboINVModel",".", 
                         paste(all.combos[[j]], collapse=''), sep="")   
 print(output.dir)
-model <- 100^(1-((sum(predictors[[all.combos[[j]]]]))/max(unique(sum(predictors[[all.combos[[j]]]])))))
+model <- 100-100^(1-((sum(predictors[[all.combos[[j]]]]))/max(unique(sum(predictors[[all.combos[[j]]]])))))
        writeRaster(model, paste(output.dir, "costmap.asc", sep=""),
                 format="ascii")
     print(paste( j, " of ", length(all.combos), ": ", Sys.time(), sep=""))
   }
   
-####Power Functions Trumbo et al. 2013
+####inverse Power Functions Trumbo et al. 2013
 
 for (i in 1:pred.num){
-model<-100^(1-(predictors[[i]]/max(unique(predictors[[i]]))))
+model<-100-100^(1-(predictors[[i]]/max(unique(predictors[[i]]))))
 output.dir <- paste("H:\\THESISDATA\\OutputCostMaps\\TrumboINVModel",".", 
                         paste(i, collapse=''), sep="")   
 print(output.dir)
