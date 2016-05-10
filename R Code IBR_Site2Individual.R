@@ -1,13 +1,3 @@
-##Creating individual matrices from population distance matrices
-
-##read in Genetic Distance Maps
-Gen<-(read.csv("H:\\THESISDATA\\Genetics\\PairwiseGenDist14Loci.csv"))
-Gen<-Gen[,-122]
-##Make a full matrix from the genetic matrix
-head(Gen)
-Gen[upper.tri(Gen)] = t(Gen)[upper.tri(Gen)]
-dim(Gen)
-
 ##read in a file with the krat individuals and the krat sites
 
 KratSite<-read.csv("H:\\THESISDATA\\KRAT_SITE_FILES\\Krat_Lat.csv")
@@ -45,11 +35,13 @@ rownames(Gen)<-OrderedData$ID[1:121]
 
 x<-(OrderedData$CScode)
 length(x)
-##read in cost maps
+
+#########read in cost maps
 
 IBRmaps<-list.files("H:\\THESISDATA\\IBRDistMatrices\\")
 IBRmaps
-##read in file with the Circuitscape ID assignment
+
+#######read in file with the Circuitscape ID assignment
 
 SiteNum<-read.table("H:\\THESISDATA\\GKR_LatLon\\GKR_Circuitscape_Site.txt")
 
