@@ -1,3 +1,5 @@
+
+
 predictors<-stack(Rain.reclass,Slope.reclass,Veg.reclass,Road.reclass)
 
 predictors<-predictors*1000 ##Make non-decimal for power functions
@@ -56,7 +58,7 @@ model <- sum(predictors[[all.combos[[j]]]])^k/max(unique(sum(predictors[[all.com
 
 ####single predictor Power Model
 
-Powers<-c(.25,.5,.75.1,1.25,1.5,1.75,2)
+Powers<-c(.5,1,1.5,2)
 
 for(k in 1:length(Powers)){
 
@@ -118,3 +120,5 @@ print(output.dir)
                 format="ascii")
     print(paste(i, " of ", length(all.combos), ": ", Sys.time(), sep=""))
   }
+
+############################################################
