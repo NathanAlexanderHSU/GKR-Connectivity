@@ -38,10 +38,7 @@ mfiles
 PopLab<-read.delim("H:\\TESS\\PopAssign.txt",header=F)
 str(PopLab)
 head(PopLab)
-plotMultiline(mfiles,spl=65,lpp=10,barspace=0)
-?plotMultiline
-length(mfiles)
-plotRuns(mfiles,imgoutput="tab")
+plotRuns(choose.files(),imgoutput="tab")
 summary(Summarized)
 (Tabulated)
 R<-read.table(choose.files()) 
@@ -51,23 +48,4 @@ write.csv(Pop,"C:\\Users\\nba52\\Desktop\\PopAssignments.csv")
 head(R)
 analyseRuns(R)
 
-##DIC attempt
 
-head(tfiles)
-boxplot(DFTess[[200]])
-K3<-data.frame(read.table("H:\\TESS\\Merge1\\TESSpop_K3-combined-merged.txt")[,2:4])
-head(K3)
-max(K3[,3])
-
-K3a<-data.frame(as.numeric(K3[,1]),as.numeric(K3[,2]),as.numeric(K3[,3]))
-K3a1<-if(K3[i,1]>.5){
-K3[i,1]
-}
-K3a1
-hist(K3a[,1],col="blue")
-hist(length(K3a[,2]>.5),col="red",add=TRUE)
-hist(K3a[,3],col="yellow")
-K4<-data.frame(read.table("H:\\TESS\\Merge1\\TESSpop_K4-combined-merged.txt")[,2:5])
-head(K4)
-K4[,4]
-max(K4[,4])
