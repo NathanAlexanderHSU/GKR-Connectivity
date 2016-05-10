@@ -1,3 +1,5 @@
+
+#######################################################
 ####CIRCUIT SCAPE######
 ######Load Cost maps and occurrences into Arc, and export again using the circuitscape plug in
 
@@ -11,10 +13,14 @@
 	##For individual in circuitscape, must tell it to write the CUMULATIVE CURRENT MAP to do
 		##all pairwise functions.  otherwise will give an "nan" as a pairwise cost distance
 
-	##New Solution-create a TAB DELIMITED file of Site Locations.  Will Populate individual 
+
+##########################################################
+######New Solution-create a TAB DELIMITED file of Site Locations.  Will Populate individual 
 		##distance matrices by resampling the distance matrices of sites.  This will
 		##speed up processing time (CS will measure 46 pairwise distances rather than 121)
-		
+
+
+###File locations need to be set for different computers
 
 ######CircuitScape
 rm(list=ls())
@@ -130,5 +136,7 @@ rdist <- as.matrix(as.dist(read.csv(paste("H:\\THESISDATA\\CSoutput\\",maps[i],"
 write.csv(rdist, paste("H:\\THESISDATA\\IBRDistMatrices\\",maps[i],".csv",collapse='',sep=""))
 }
 
+
+###For Habitat Suitability analysis
 rdist <- as.matrix(as.dist(read.csv(paste("H:\\THESISDATA\\CSoutput\\HabSuitabilityConnectivity_resistances.out",sep=""),sep=" ",row.names=1,header=1)))
 write.csv(rdist, paste("H:\\THESISDATA\\IBRDistMatrices\\HabSuitabilityConnectivity.csv"))
