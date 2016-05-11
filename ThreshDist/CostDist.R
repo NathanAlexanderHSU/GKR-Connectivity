@@ -67,3 +67,55 @@ colnames(submat)<-c("Site1","Site2","Euc","Cost")
 
 write.csv(submat, paste(c("H:\\THESISDATA\\3kmlessthan\\LCP\\",dists[k],".csv"),collapse="",sep=""))
 }
+
+##Resample genetic pairwise distances##
+#######################################
+
+##Read in pairwise vector##
+
+P<-read.csv(choose.files())
+head(P)
+
+setwd(choose.dir()) #set wd to pairwise cost dist matrices file location
+distDps<-read.csv(choose.files())
+distDps
+
+distDps<-distDps[-1] #remove the non cost-dist folder(s)
+
+
+	subgen<-matrix(NA,ncol=4,nrow=length(P$Site1))
+	subgen[,1]<-P[,1]
+	subgen[,2]<-P[,2]
+	subgen[,3]<-P[,3]
+	
+
+for(i in 1:length(P[,1])){
+	subgen[i,4]<-distDps[subgen[i,1],subgen[i,2]]
+}
+
+colnames(submat)<-c("Site1","Site2","Euc","Dps")
+
+write.csv(submat,"H:\\THESISDATA\\3kmlessthan\\DpsSubset.csv")
+
+
+##Repeat for PS gen distances
+distPS<-read.csv(choose.files())
+distPS
+
+distPS<-distPS[-1] #remove the non cost-dist folder(s)
+distPS[upper.tri(distPS)] <- t(distPS)[upper.tri(distPS)]
+head(distPS)
+
+	subgen<-matrix(NA,ncol=4,nrow=length(P$Site1))
+	subgen[,1]<-P[,1]
+	subgen[,2]<-P[,2]
+	subgen[,3]<-P[,3]
+	
+
+for(i in 1:length(P[,1])){
+	subgen[i,4]<-distPS[subgen[i,1],subgen[i,2]]
+}
+subgen
+colnames(submat)<-c("Site1","Site2","Euc","PS")
+
+write.csv(submat,"H:\\THESISDATA\\3kmlessthan\\PSSubset.csv")
