@@ -116,9 +116,9 @@ for(i in 1:length(P[,1])){
 	subgen[i,4]<-distDps[subgen[i,1],subgen[i,2]]
 }
 
-colnames(submat)<-c("Site1","Site2","Euc","Dps")
+colnames(subgen)<-c("Site1","Site2","Euc","Dps")
 
-write.csv(submat,"H:\\THESISDATA\\3kmlessthan\\DpsSubset.csv")
+write.csv(subgen,"H:\\THESISDATA\\3kmlessthan\\DpsSubset.csv")
 
 distPS<-read.csv(choose.files())
 distPS
@@ -137,9 +137,9 @@ for(i in 1:length(P[,1])){
 	subgen[i,4]<-distPS[subgen[i,1],subgen[i,2]]
 }
 subgen
-colnames(submat)<-c("Site1","Site2","Euc","PS")
+colnames(subgen)<-c("Site1","Site2","Euc","PS")
 
-write.csv(submat,"H:\\THESISDATA\\3kmlessthan\\PSSubset.csv")
+write.csv(subgen,"H:\\THESISDATA\\3kmlessthan\\PSSubset.csv")
 
 ###Mantel Test##
 ################################################
