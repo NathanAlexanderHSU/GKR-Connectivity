@@ -25,7 +25,7 @@ Analysis <- mgQuick(dm,Coords)
 
 
 ## Visualize results of the first two memgene variables 
-mgMap(Coords, Analysis$memgene[,1])
+mgMap(Coords, Analysis$memgene[,1],legend=TRUE)
 
 Analysis$memgene[,1:2]
 
