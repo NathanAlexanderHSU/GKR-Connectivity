@@ -7,6 +7,20 @@
 
 ##In Excel, using an "IF" function, use "IF(cell>3000,"NA",cell)
 
+###R version to truncate data values###
+Euc<-read.csv(choose.files())
+Euc<-Euc[,-1]
+Euc3<-matrix(NA,nrow=239,ncol=239)
+
+for(i in 1:239)
+
+for(j in 1:239){
+if (Euc[i,j]>=3000) {
+   Euc3[i,j]<-NA
+} else {
+   Euc3[i,j]<-Euc[i,j]
+}
+}
 ###Read in Cost distance Euc matrix with NAs##
 
 ##Get rid of the NAs and leave a list of pairwise distance vectors##
