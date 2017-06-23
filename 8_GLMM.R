@@ -22,8 +22,21 @@ individuals
 	IBD<-na.omit(IBD)
 IBD
 	Gen<-as.matrix(read.csv(choose.files()),header=TRUE)
+head(Gen[1:10,1:10])
+
+###GENALEX CODE###
+##	Gen<-Gen[,-240] 
+##	GenA<-Gen
+##	Gen<-GenA
+##	Gen[upper.tri(Gen)]<-t(Gen)[upper.tri(Gen)]
+head(Gen[1:10,1:10])
+
+
+##3Dps CODE###
 	Gen<-Gen[,-1]
 	diag(Gen)<-NA
+	Gen<-as.numeric(Gen)
+
 	GenDist<-as.vector(Gen)
 	GenDist<-na.omit(GenDist)
 
@@ -99,7 +112,7 @@ Mod.Sel
 Mod.Sel<-Mod.Sel[order(Mod.Sel$AICc),]
 Mod.Sel
 
-write.csv(Mod.Sel,"C:\\Users\\Nathan\\Desktop\\GKR_ModelSelection_AICc.csv")
+write.csv(Mod.Sel,"C:\\Users\\Nathan\\Desktop\\GKR_ModelSelection_AICc_Dps_LCP.csv")
 
 ##Goodness of Fit
 
@@ -119,10 +132,10 @@ for(i in 1:(length(IBR))){
 }
 
 colnames(Mod.Fit)<-c("Model","Marginal R2","Conditional R2")
-
-write.csv(Mod.Fit,"C:\\Users\\Nathan\\Desktop\\GKR_ModelFit_R2.csv")
+Mod.Fit
+write.csv(Mod.Fit,"C:\\Users\\Nathan\\Desktop\\GKR_ModelFit_R2_Dps_LCP.csv")
 Model.Out
-saveRDS(Model.Out,"C:\\Users\\Nathan\\Desktop\\GKR_REML_Models.rds")
+saveRDS(Model.Out,"C:\\Users\\Nathan\\Desktop\\GKR_REML_Models_Dps_LCP.rds")
 
 
 
@@ -152,3 +165,4 @@ saveRDS(Model.Out,"C:\\Users\\Nathan\\Desktop\\GKR_REML_Models.rds")
 ###This function can be used to extract the F-value if we want to proceed with the r-squared beta method
 #getKR(a,"aux")#,"ndf", "ddf"))#, "Fstat", "p.value",
 #"F.scaling", "FstatU", "p.valueU", "aux"))
+
