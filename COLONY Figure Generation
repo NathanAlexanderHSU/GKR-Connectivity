@@ -1,0 +1,78 @@
+require(raster)
+require(rgdal)
+require(ggmap)
+
+SibPops<-read.csv(choose.files())
+head(SibPops)
+getwd()
+setwd("C:/Users/Nathan/Desktop/2015THESISDATA/Site_WGS84")
+SiteLoc<-shape <- readOGR(dsn=".",layer="All_Sites_Locs")
+SiteLoc<-read.csv(choose.files())
+SiteLoc
+Coords<-cbind(SiteLoc$Longitude,SiteLoc$Latitude)
+
+Coords1<-cbind(SibPops$Lon1,SibPops$Lat1)
+Coords2<-cbind(SibPops$Lon2,SibPops$Lat2)
+
+plot(Coords,xlab="Longitude",ylab="Latitude")
+
+###Full Sib
+Sibling <- SibPops[ which(SibPops$Relation=='Sibling'),]
+Mother <- SibPops[ which(SibPops$Relation=='Mother'),]
+Father<-SibPops[ which(SibPops$Relation=='Father'),]
+
+
+Sib_Coords1<-cbind(Sibling$Lon1,Sibling$Lat1)
+Sib_Coords2<-cbind(Sibling$Lon2,Sibling$Lat2)
+
+Mother_Coords1<-cbind(Mother$Lon1,Mother$Lat1)
+Mother_Coords2<-cbind(Mother$Lon2,Mother$Lat2)
+
+Father_Coords1<-cbind(Father$Lon1,Father$Lat1)
+Father_Coords2<-cbind(Father$Lon2,Father$Lat2)
+
+segments(Sib_Coords1[,1],Sib_Coords1[,2],Sib_Coords2[,1],Sib_Coords2[,2],lty=1,lwd=2,col="black")
+segments(Mother_Coords1[,1],Mother_Coords1[,2],Mother_Coords2[,1],Mother_Coords2[,2],lty=2,lwd=2,col="black")
+segments(Father_Coords1[,1],Father_Coords1[,2],Father_Coords2[,1],Father_Coords2[,2],lty=3,lwd=2,col="black")
+
+###Google Map plot###
+
+mapImageData1 <- get_map(location = c(lon = mean(SiteLoc$Longitude), lat = mean(SiteLoc$Latitude)),
+                         color = "color",
+                         source = "google",
+                         maptype = "terrain",
+                         zoom = 11)
+
+CPNA<-ggmap(mapImageData1,
+            extent = "device",
+            ylab = "Latitude",
+            xlab = "Longitude") 
+
+CPNA + 
+  geom_point(data=SiteLoc, aes(x=Longitude, y=Latitude),size=2,pch=24, col='black') +
+  geom_segment(data = Sibling, aes(x = as.numeric(Lon1), 
+                               y = as.numeric(Lat1), 
+                               xend = as.numeric(Lon2), 
+                               yend = as.numeric(Lat2)),size=1,lty=1) +
+  geom_segment(data = Mother, aes(x = as.numeric(Lon1), 
+                                   y = as.numeric(Lat1), 
+                                   xend = as.numeric(Lon2), 
+                                   yend = as.numeric(Lat2)),size=1.2,lty=2) +
+  geom_segment(data = Father, aes(x = as.numeric(Lon1), 
+                                   y = as.numeric(Lat1), 
+                                   xend = as.numeric(Lon2), 
+                                   yend = as.numeric(Lat2)),size=1.2,lty=4)
+
+############################################################################
+
+######Bar Plot of Distances ##############
+
+#Remove outlier disperser
+WithinSite<-SibPops[which(SibPops$distances..m.<5000),]
+
+max(WithinSite$distances..m.)
+ggplot(data=WithinSite, aes(WithinSite$distances..m., group=WithinSite$Relation,fill=WithinSite$Relation)) + 
+  geom_histogram(breaks=seq(0, 250, by=25), col="black") +
+  scale_fill_grey() + theme_bw() +
+  guides(fill=guide_legend(title="Relationship"))+
+  labs(x = "Distance (m)", y = "Count")
