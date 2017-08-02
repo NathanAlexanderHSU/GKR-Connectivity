@@ -48,10 +48,11 @@ CPNA<-ggmap(mapImageData1,
             ylab = "Latitude",
             xlab = "Longitude") 
 
-CPNA + 
-  geom_point(data=SiteLoc, aes(x=Longitude, y=Latitude),size=2,pch=24, col='black') +
-  geom_point(data=SibPops, aes(x=Lon1, y=Lat1),size=2,pch=17, col='black') +
-  geom_point(data=SibPops, aes(x=Lon2, y=Lat2),size=2,pch=17, col='black') +
+Colony_Map<-
+  CPNA +
+  geom_point(data=SiteLoc, aes(x=Longitude, y=Latitude),size=2,pch=24, fill='white',show.legend=T) +
+  geom_point(data=SibPops, aes(x=Lon1, y=Lat1),size=2,pch=17, col='black', show.legend=T) +
+  geom_point(data=SibPops, aes(x=Lon2, y=Lat2),size=2,pch=17, col='black',show.legend = T) +
   geom_segment(data = Sibling, aes(x = as.numeric(Lon1), 
                                y = as.numeric(Lat1), 
                                xend = as.numeric(Lon2), 
@@ -63,7 +64,13 @@ CPNA +
   geom_segment(data = Father, aes(x = as.numeric(Lon1), 
                                    y = as.numeric(Lat1), 
                                    xend = as.numeric(Lon2), 
-                                   yend = as.numeric(Lat2)),size=1.2,lty=4)
+                                   yend = as.numeric(Lat2)),size=1.2,lty=4) 
+
+
+##Legend for Map?
+
+Colony_Map
+  
 
 ############################################################################
 
