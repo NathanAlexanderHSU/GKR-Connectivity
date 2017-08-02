@@ -50,6 +50,8 @@ CPNA<-ggmap(mapImageData1,
 
 CPNA + 
   geom_point(data=SiteLoc, aes(x=Longitude, y=Latitude),size=2,pch=24, col='black') +
+  geom_point(data=SibPops, aes(x=Lon1, y=Lat1),size=2,pch=17, col='black') +
+  geom_point(data=SibPops, aes(x=Lon2, y=Lat2),size=2,pch=17, col='black') +
   geom_segment(data = Sibling, aes(x = as.numeric(Lon1), 
                                y = as.numeric(Lat1), 
                                xend = as.numeric(Lon2), 
