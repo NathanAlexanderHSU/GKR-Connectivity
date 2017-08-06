@@ -69,5 +69,4 @@ for(k in 1:length(maps)){
     writeOGR(LCP_SLDF, dsn="C:/Users//Nathan/Desktop/LCP_shapefiles" ,layer=paste0("LCP_",maps[k]),driver="ESRI Shapefile")
 }
 
-plot(LCP,add=TRUE)
-values(cost.surface)
+
