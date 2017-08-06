@@ -21,7 +21,7 @@ e <- extent(raster(maps[1]))
 setwd(choose.dir())
 plot(e)
 plot(raster(paste(maps[1])),legend=FALSE,xlim=c(684900,730000),ylim=c(4030000,4065000),add=TRUE)
-LCP <- SpatialLines()
+
 
 points(patch.locs[,2:3],pch=25,fill="white")
 plot(gkr.pts[1,],add=TRUE,pch=17)
@@ -45,11 +45,14 @@ for(k in 1:length(maps)){
 
   
   for(i in 1:(length(patch.locs[,1])-1)){
-    
-    for(z in 3:(length(patch.locs[,1]))) {
+  
+    for(z in (i+1):(length(patch.locs[,1]))) {
   from.patch <- patch.locs[i,]
   
   to.patch <- patch.locs[z,]
+  
+  
+  
   from.loc <- c(from.patch$x, from.patch$y)
   to.loc <- c(to.patch$x, to.patch$y)
   cost <- shortestPath(tr.corr, from.loc, to.loc,output="SpatialLines")
@@ -66,4 +69,5 @@ for(k in 1:length(maps)){
     writeOGR(LCP_SLDF, dsn="C:/Users//Nathan/Desktop/LCP_shapefiles" ,layer=paste0("LCP_",maps[k]),driver="ESRI Shapefile")
 }
 
-
+plot(LCP,add=TRUE)
+values(cost.surface)
