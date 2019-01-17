@@ -1,0 +1,39 @@
+install.packages("memgene")
+install.packages("adegenet")
+
+library(memgene)
+library(adegenet)
+## Read in genotypes and coordinates
+genalex <- read.csv(choose.files(), header=TRUE)  ##Read in raw loci values, not genetic distances
+genalex<-genalex[-1,]
+head(genalex)
+dim(genalex)
+wgs_coords=read.csv(choose.files(),header=TRUE)
+head(wgs_coords)
+wgs_gkr<-merge(wgs_coords,genalex,by="ID")
+colnames(wgs_gkr)
+dim(wgs_gkr)
+head(wgs_gkr)
+dim(wgs_gkr)
+# Subset genotypes and coordinates
+Genotypes <- wgs_gkr[1:238,16:45]
+Coords <- wgs_gkr[1:238,8:9]
+head(Genotypes)
+head(Coords)
+Genotypes
+## Produce genetic distance matrix using proportion of shared alleles (Bowcock et al. 1994)
+
+dm <- codomToPropShared(Genotypes,missingData = -9)  
+
+## Extract Moran's Eigen Vectors from distance matrix
+## Extract Moran's Eigen Vectors from distance matrix
+
+if(!exists("Analysis"))
+  Analysis <- mgQuick(dm,Coords)
+## Visualize results of the first memgene variables 
+
+
+mgMap(Coords, Analysis$memgene[,1],legend=TRUE)
+plot(a)
+Analysis$memgene[,1:2]
+
