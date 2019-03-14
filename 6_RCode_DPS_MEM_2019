@@ -1,39 +1,61 @@
-install.packages("memgene")
-install.packages("adegenet")
+require(adegenet)
+require(memgene)
+require(rgdal)
+require(raster)
+require(ggplot2)
 
-library(memgene)
-library(adegenet)
-## Read in genotypes and coordinates
-genalex <- read.csv(choose.files(), header=TRUE)  ##Read in raw loci values, not genetic distances
-genalex<-genalex[-1,]
-head(genalex)
-dim(genalex)
-wgs_coords=read.csv(choose.files(),header=TRUE)
+
+dm<-read.csv("C:\\Users\\Nathan\\Desktop\\2015THESISDATA\\Genetics\\Dps.csv")
+dm<-dm[,-1]
+ps<-read.csv("C:\\Users\\Nathan\\Desktop\\2015THESISDATA\\Genetics\\ORDERED_Genetics_Codom_PS.csv")
+ps_2<-ps[1:239]
+
+ps_2[upper.tri(ps_2)]<-t(ps_2)[upper.tri(ps_2)]
+ps_3<-cbind(ps[,240],ps_2)
+colnames(ps_3)<-c("ID",colnames(ps_2))
+
+wgs_coords<-read.csv("C:\\Users\\Nathan\\Desktop\\2015THESISDATA\\Site_WGS84\\All_Site_Locs_84.csv")
 head(wgs_coords)
-wgs_gkr<-merge(wgs_coords,genalex,by="ID")
-colnames(wgs_gkr)
-dim(wgs_gkr)
-head(wgs_gkr)
-dim(wgs_gkr)
-# Subset genotypes and coordinates
-Genotypes <- wgs_gkr[1:238,16:45]
-Coords <- wgs_gkr[1:238,8:9]
-head(Genotypes)
-head(Coords)
-Genotypes
-## Produce genetic distance matrix using proportion of shared alleles (Bowcock et al. 1994)
-
-dm <- codomToPropShared(Genotypes,missingData = -9)  
-
-## Extract Moran's Eigen Vectors from distance matrix
-## Extract Moran's Eigen Vectors from distance matrix
-
+ID_coords<-cbind(wgs_coords[,3],wgs_coords[,8:9])
+Coords<-ID_coords[,2:3]
 if(!exists("Analysis"))
-  Analysis <- mgQuick(dm,Coords)
+  Analysis <- mgQuick(ps_2,Coords)
+
+
+elev <- getData('alt', download=TRUE, country='USA', mask=TRUE)
+elev.48 <- elev[[1]]
+boundary<-readOGR(dsn='C:\\Users\\Nathan\\Desktop\\2015THESISDATA\\shapefiles',layer='boundary_84')
+resample_scale<-raster('C:\\Users\\Nathan\\Desktop\\2015THESISDATA\\shapefiles\\slope_img_84.tif')
+elev_site<-crop(elev.48,boundary)
+elev_site<-resample(elev_site,resample_scale)
+elev_site<-mask(elev_site,boundary)
+
+
 ## Visualize results of the first memgene variables 
+dev.new()
+plot.new()
+par(mfcol=c(1,2))
+plot(elev_site,col = gray.colors(10, start = 0.9, end = 0.3, gamma = 2.2, alpha = NULL),legend=FALSE,
+     xlab='Longitude',ylab='Latitude',pin=c(6,6))
+plot(boundary,add=TRUE,pin=c(6,6))
+mgMap(Coords, scale(Analysis$memgene[,1]),legend=TRUE,add=TRUE)
+
+Analysis2 <- mgQuick(dm,Coords)
+## Visualize results of the first memgene variables 
+head(Coords)
+
+##Get background map
 
 
-mgMap(Coords, Analysis$memgene[,1],legend=TRUE)
-plot(a)
-Analysis$memgene[,1:2]
+plot(elev_site,col = gray.colors(10, start = 0.9, end = 0.3, gamma = 2.2, alpha = NULL),legend=FALSE,
+     xlab='Longitude',ylab='Latitude',pin=c(6,6))
+plot(boundary,add=TRUE,pin=c(6,6))
+mgMap(Coords, scale(Analysis2$memgene[,1]),legend=TRUE,add=TRUE)
 
+boundary
+elev_site
+ggplot() + geom_raster(elev_site,aes(x=Longitude, y=Latitude))
+
+plot(scale(Analysis$memgene[,1])-scale(Analysis2$memgene[,1]))
+dev.new()
+plot(as.matrix(dm)~as.matrix(ps_2))
